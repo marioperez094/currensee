@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/currensee/static/css/main.31c3fd3b.css",
+    "main.js": "/currensee/static/js/main.6a67a541.js",
+    "static/js/787.a33674ff.chunk.js": "/currensee/static/js/787.a33674ff.chunk.js",
+    "index.html": "/currensee/index.html",
+    "main.31c3fd3b.css.map": "/currensee/static/css/main.31c3fd3b.css.map",
+    "main.6a67a541.js.map": "/currensee/static/js/main.6a67a541.js.map",
+    "787.a33674ff.chunk.js.map": "/currensee/static/js/787.a33674ff.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.31c3fd3b.css",
+    "static/js/main.6a67a541.js"
+  ]
+}
