@@ -9,7 +9,9 @@ class Components extends React.Component {
     super(props);
     this.state = {
       primarySearch: 'EUR',
+      primarySpelledOut: 'Euro',
       secondarySearch: 'All',
+      secondarySpelledOut: 'Hi',
       primaryInput: 1,
       secondaryInput: 'Null',
       listedCurrencies: [],
@@ -74,13 +76,19 @@ class Components extends React.Component {
 
   //Event triggered by changing the first selector, can either fetch the table or set the rate depending on what the secondary selector is set to. 
   primaryCurrency(event) {
-    this.setState({ primarySearch: event.target.value }, () => { this.state.secondarySearch === 'All' ? this.fetchTable() : this.fetchRate(this.state.primarySearch, this.state.secondarySearch), this.setInputs('secondary') });
+    let fullName = this.state.listedCurrencies.filter((match) => {
+      return event.target.value === match.name
+    })
+    this.setState({ primarySearch: event.target.value, primarySpelledOut: fullName[0].symbol }, () => { this.state.secondarySearch === 'All' ? this.fetchTable() : this.fetchRate(this.state.primarySearch, this.state.secondarySearch), this.setInputs('secondary') });
   }
 
   //Secondary selector, also what makes the table appear or disappear
   secondaryCurrency(event) {
     if (event.target.value !== 'All') { this.fetchRate(this.state.primarySearch, event.target.value) }
-    this.setState({ secondarySearch: event.target.value }, () => {
+    let fullName = this.state.currencyFilter.filter((match) => {
+      return event.target.value === match.name
+    })
+    this.setState({ secondarySearch: event.target.value, secondarySpelledOut: fullName[0].symbol }, () => {
       if (this.state.secondarySearch === 'All') { this.fetchTable() }
       this.setInputs('secondary')
     });
@@ -131,7 +139,7 @@ class Components extends React.Component {
 
 
   render() {
-    const { listedCurrencies, currencies, currencyFilter, primarySearch, secondarySearch, primaryInput, secondaryInput } = this.state;
+    const { primarySpelledOut, secondarySpelledOut, listedCurrencies, currencies, currencyFilter, primarySearch, secondarySearch, primaryInput, secondaryInput } = this.state;
 
     return (
       <div className='container-fluid mt-5 content-wrap'>
@@ -140,6 +148,10 @@ class Components extends React.Component {
             <div className='selectors d-flex justify-content-around'>
               <Selector options={listedCurrencies} value={primarySearch} onSelect={this.primaryCurrency}></Selector>
               <Selector options={currencyFilter} value={secondarySearch} onSelect={this.secondaryCurrency}></Selector>
+            </div>
+            <div className='spelledOut d-flex justify-content-around mb-5'>
+              <label><h4>{primarySpelledOut}</h4></label>
+              {secondarySearch !== 'All' ? <label><h4>{secondarySpelledOut}</h4></label> : null}
             </div>
             <div className='inputs d-flex justify-content-around'>
               <AmountInput value={primaryInput} onChange={this.primaryInputChange}></AmountInput>
