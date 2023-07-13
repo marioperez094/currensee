@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/currensee/static/css/main.1b5b50c7.css",
-    "main.js": "/currensee/static/js/main.aa2fafa0.js",
-    "static/js/787.bdd0415d.chunk.js": "/currensee/static/js/787.bdd0415d.chunk.js",
+    "main.css": "/currensee/static/css/main.94ae8468.css",
+    "main.js": "/currensee/static/js/main.9558bb73.js",
+    "static/js/787.a33674ff.chunk.js": "/currensee/static/js/787.a33674ff.chunk.js",
     "index.html": "/currensee/index.html",
-    "main.1b5b50c7.css.map": "/currensee/static/css/main.1b5b50c7.css.map",
-    "main.aa2fafa0.js.map": "/currensee/static/js/main.aa2fafa0.js.map",
-    "787.bdd0415d.chunk.js.map": "/currensee/static/js/787.bdd0415d.chunk.js.map"
+    "main.94ae8468.css.map": "/currensee/static/css/main.94ae8468.css.map",
+    "main.9558bb73.js.map": "/currensee/static/js/main.9558bb73.js.map",
+    "787.a33674ff.chunk.js.map": "/currensee/static/js/787.a33674ff.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.1b5b50c7.css",
-    "static/js/main.aa2fafa0.js"
+    "static/css/main.94ae8468.css",
+    "static/js/main.9558bb73.js"
   ]
 }
