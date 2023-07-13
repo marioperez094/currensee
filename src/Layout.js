@@ -1,4 +1,4 @@
-import React from 'react'; 
+import React from 'react';
 import { Link } from "react-router-dom";
 
 const Layout = (props) => {
@@ -13,9 +13,9 @@ const Layout = (props) => {
       </nav>
 
       <div className='container-fluid'>
-      
-      {props.children}
-      
+
+        {props.children}
+
       </div>
 
       <footer className='mt-3'>

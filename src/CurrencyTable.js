@@ -9,8 +9,8 @@ const CurrencyTable = (props) => {
       <table className='table table-responsive table-sm bg-light mt-4'>
         <thead>
           <tr>
-            <th scope='col'>{ base }</th>
-            <th scope='col'>{ amount }</th>
+            <th scope='col'>{base}</th>
+            <th scope='col'>{amount}</th>
           </tr>
         </thead>
         <tbody>
@@ -19,9 +19,9 @@ const CurrencyTable = (props) => {
             const acronym = currency.name[0].acronym
             const name = currency.name[0].name
             return (
-              <tr key={ acronym }>
-                <td className="pl-4 py-2">{ name } <small>({ acronym })</small></td>
-                <td className="text-right pr-4 py-2">{ rate.toFixed(6) }</td>
+              <tr key={acronym}>
+                <td className="pl-4 py-2">{name} <small>({acronym})</small></td>
+                <td className="text-right pr-4 py-2">{rate.toFixed(6)}</td>
               </tr>
             )
           })}
