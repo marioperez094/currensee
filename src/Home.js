@@ -1,123 +1,122 @@
 import React from 'react';
+import { json, checkStatus } from './utils'
 import Selector from './Selector';
-import { checkStatus, json } from './utils/fetchUtils'
-import CurrencyTable from './CurrencyTable';
+import TableItem from './TableItem'
 import AmountInput from './AmountInput'
 
-class Home extends React.Component {
-  constructor() {
-    super();
+class Components extends React.Component {
+  constructor(props) {
+    super(props);
     this.state = {
-      base: 'EUR',
-      baseFull: 'Euro',
-      quote: 'All',
-      quoteFull: 'Null',
-      baseValue: 1,
-      quoteValue: 1,
-      rates: null,
+      primarySearch: 'EUR',
+      secondarySearch: 'All',
+      primaryInput: 1,
+      secondaryInput: 'Null',
       listedCurrencies: [],
       currencyFilter: [],
-      loading: true,
-      currentRate: 1,
-    }
+      currencies: [],
+      rate: 0,
+    };
+
+    this.primaryCurrency = this.primaryCurrency.bind(this);
+    this.primaryInputChange = this.primaryInputChange.bind(this);
+    this.secondaryCurrency = this.secondaryCurrency.bind(this);
+    this.secondaryInputChange = this.secondaryInputChange.bind(this);
   }
 
-  componentDidMount() {
-    this.fetchCurrencies();
-  }
-
+  //FrankFurter Currency List
   fetchCurrencies() {
     fetch('https://api.frankfurter.app/currencies')
       .then(checkStatus)
       .then(json)
       .then((response) => {
-        let listedResponse = Object.keys(response).map((dollar) => { return { acronym: dollar, name: response[dollar] } })
-        this.setState({ listedCurrencies: listedResponse, currencyFilter: [...listedResponse, { acronym: 'All', name: 'All' }] })
-        console.log(this.state.currencyFilter)
-        this.getRatesData(this.state.base)
+        let listedResponse = Object.keys(response).map((dollar) => { return { name: dollar, symbol: response[dollar] } })
+        this.setState({ listedCurrencies: listedResponse, currencyFilter: [...listedResponse, { name: 'All', symbol: 0 }] })
       })
-    }
+    setTimeout(() => { console.log(this.state.listedCurrencies) }, 3000)
+  }
 
-  getRatesData = (base) => {
-    this.setState({ loading: true })
-    fetch(`https://api.frankfurter.app/latest?from=${base}`)
+
+  //FrankFurter API 
+  fetchTable() {
+    fetch('https://api.frankfurter.app/latest?from=' + this.state.primarySearch)
       .then(checkStatus)
       .then(json)
-      .then(data => {
-        if (data.error) {
-          throw new Error(data.error);
-        }
-        const rates = Object.keys(data.rates)
-          .map(acronym => ({
-            rate: data.rates[acronym],
-            name: this.state.listedCurrencies.filter(filter => filter.acronym === acronym),
-          }))
-          console.log(rates)
-          this.setState({ rates, loading: false })
+      .then((response) => {
+        console.log(response)
+        let listedResponse = Object.keys(response.rates).map((dollar) => { return { name: dollar, rate: response.rates[dollar] } });
+        this.setState({ currencies: [{ name: response.base, rate: response.amount }, ...listedResponse] })
       })
-      .catch(error => console.error(error.message));
+      .catch(error => {
+        console.error(error.message);
+      })
   }
 
-  getRate = (base, quote) => {
-    this.setState({ loading: true});
-    fetch(`https://api.frankfurter.app/latest?from=${base}&to=${quote}`)
-      .then(checkStatus)
-      .then(json)
-      .then(data => {
-        if (data.error) {
-          throw new Error(data.error);
-        }
-        const currentRate = data.rates[quote];
-        this.setState({
-          currentRate,
-          baseValue: 1,
-          quoteValue: Number((1 * currentRate).toFixed(3)),
-          loading: false,
-        });
-      })
-      .catch(error => console.error(error.message));
+
+  //Calculates rate based on previously retrieved object. I went back and forth about just fetching it from the API again but read in the assignment that it wasn't needed. 
+  fetchRate(primary, secondary) {
+    let rateOne = this.state.currencies.filter((match) => {
+      return primary === match.name
+    })
+    let rateTwo = this.state.currencies.filter((match) => {
+      return secondary === match.name
+    })
+
+    this.setState({ rate: rateTwo[0].rate / rateOne[0].rate })
   }
 
-  changeBase = (event) => {
-    if (this.state.quote !== 'All' && event.target.value !== this.state.quote) { this.getRate(event.target.value, this.state.quote) }
-    if (this.state.quote === 'All') {
-      this.getRatesData(event.target.value);
+
+  //Mounts on load
+  componentDidMount() {
+    this.fetchCurrencies()
+    this.fetchTable()
+  }
+
+  //Event triggered by changing the first selector, can either fetch the table or set the rate depending on what the secondary selector is set to. 
+  primaryCurrency(event) {
+    this.setState({ primarySearch: event.target.value }, () => { this.state.secondarySearch === 'All' ? this.fetchTable() : this.fetchRate(this.state.primarySearch, this.state.secondarySearch), this.setInputs('secondary') });
+  }
+
+  //Secondary selector, also what makes the table appear or disappear
+  secondaryCurrency(event) {
+    if (event.target.value !== 'All') { this.fetchRate(this.state.primarySearch, event.target.value) }
+    this.setState({ secondarySearch: event.target.value }, () => {
+      if (this.state.secondarySearch === 'All') { this.fetchTable() }
+      this.setInputs('secondary')
+    });
+  }
+
+  //First input
+  primaryInputChange(event) {
+    this.setState({ primaryInput: event.target.value }, () => { this.setInputs('secondary') })
+  }
+
+  //Secondary input
+  secondaryInputChange(event) {
+    this.setState({ secondaryInput: event.target.value }, () => { this.setInputs('primary') })
+  }
+
+  //Sets the opposite input
+  setInputs(inputName) {
+    switch (inputName) {
+      case 'primary':
+        const primaryInput = this.convert(this.state.secondaryInput, this.state.rate, this.toPrimary);
+        this.setState({ primaryInput })
+        break;
+      case 'secondary':
+        const secondaryInput = this.convert(this.state.primaryInput, this.state.rate, this.toSecondary);
+        this.setState({ secondaryInput })
+        break;
     }
-    
-    let fullName = this.state.listedCurrencies.filter((match) => {
-      return event.target.value === match.acronym
-    })
-    this.setState({ base: event.target.value, baseFull: fullName[0].name });
   }
 
-  changeQuote = (event) => {
-    if (event.target.value !== 'All' && event.target.value !== this.state.base) { this.getRate(this.state.base, event.target.value)}
-    let fullName = this.state.currencyFilter.filter((match) => {
-      return event.target.value === match.acronym
-    })
-    this.setState({ quote: event.target.value, quoteFull: fullName[0].name })
-  }
+  //Conversion commands same from previous conversion project
 
-  changeBaseValue = (event) => {
-    const quoteValue = this.convert(event.target.value, this.state.currentRate, this.toQuote);
-    this.setState({ 
-      baseValue: event.target.value,
-      quoteValue })
-  }
-
-  changeQuoteValue = (event) => {
-    const baseValue = this.convert(event.target.value, this.state.currentRate, this.toBase);
-    this.setState({
-      quoteValue: event.target.value,
-      baseValue
-    })
-  }
-
-  toBase(amount, rate) {
+  toPrimary(amount, rate) {
     return amount * (1 / rate);
   }
 
-  toQuote(amount, rate) {
+  toSecondary(amount, rate) {
     return amount * rate;
   }
 
@@ -130,28 +129,30 @@ class Home extends React.Component {
   }
 
 
+
   render() {
-    const { base, quote, baseFull, quoteFull, rates, listedCurrencies, currencyFilter, baseValue, quoteValue, loading } = this.state;
+    const { listedCurrencies, currencies, currencyFilter, primarySearch, secondarySearch, primaryInput, secondaryInput } = this.state;
+
     return (
-      <React.Fragment>
-        <form className="p-3 form-inline shadow p-3 mb-5 bg-body rounded">
-          <div className='selectors d-flex justify-content-around'>
-            <Selector value={ base } onSelect={ this.changeBase } options={ listedCurrencies } loading={ loading }></Selector>
-            <Selector value={ quote } onSelect={ this.changeQuote } options={ currencyFilter } loading={ loading }></Selector>
+      <div className='container-fluid mt-5 content-wrap'>
+        <div className='row d-flex justify-content-around'>
+          <div className='col-12 col-lg-8 order-1 shadow p-3 mb-5 bg-body rounded'>
+            <div className='selectors d-flex justify-content-around'>
+              <Selector options={listedCurrencies} value={primarySearch} onSelect={this.primaryCurrency}></Selector>
+              <Selector options={currencyFilter} value={secondarySearch} onSelect={this.secondaryCurrency}></Selector>
+            </div>
+            <div className='inputs d-flex justify-content-around'>
+              <AmountInput value={primaryInput} onChange={this.primaryInputChange}></AmountInput>
+              {secondarySearch !== 'All' ? <AmountInput value={secondaryInput} onChange={this.secondaryInputChange}></AmountInput> : null}
+            </div>
           </div>
-          <div className='spelledOut d-flex justify-content-around mb-5'>
-            <label><h4>{ baseFull }</h4></label>
-            { quote !== 'All' ? <label><h4>{ quoteFull }</h4></label> : null}
+          <div className='chart col-12 col-lg-3 order-3 order-lg-3 shadow p-3 mb-5 bg-body rounded'>
           </div>
-          <div className='inputs d-flex justify-content-around'>
-            <AmountInput value={ baseValue } onChange={ this.changeBaseValue } />
-            { quote !== 'All' ? <AmountInput value={ quoteValue } onChange={ this.changeQuoteValue } /> : null }
-          </div>
-        </form>
-        { quote === 'All' ? <CurrencyTable base={ base } rates={ rates } amount={ baseValue } /> : null }
-      </React.Fragment>
+          {secondarySearch === 'All' ? <TableItem amount={primaryInput} currencies={currencies}></TableItem> : null}
+        </div>
+      </div>
     )
   }
 }
 
-export default Home;
+export default Components;
