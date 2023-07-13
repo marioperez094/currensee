@@ -10,7 +10,7 @@ const NotFound = () => {
 
 const App = () => {
   return (
-    <Router basename="currensee">
+    <Router basename="/currensee">
       <nav className='navbar navbar-light'>
         <div className='container-fluid'>
           <Link className='navbar-brand' to="/">
