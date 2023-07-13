@@ -1,12 +1,7 @@
 {
-  "name": "currensee",
+  "name": "currensee2",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "npm": "8.15.0",
-    "node": "16.17.0"
-  },
-  "homepage": "https://marioperez094.github.io/currensee/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -19,7 +14,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "deploy": "npm run build && gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -36,8 +30,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "gh-pages": "^5.0.0"
   }
 }

@@ -49,10 +49,10 @@ input {
   border-bottom: 2px gray solid;
 }
 
-label h4 {
+
+.inputs span {
+  margin: 50px;
   font-size: 25px;
-  height: 50px;
-  width: 200px;
 }
 
 table {
