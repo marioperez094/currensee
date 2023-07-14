@@ -138,6 +138,7 @@ class Home extends React.Component {
 
   changeQuote = (event) => {
     if (event.target.value !== 'All' && event.target.value !== this.state.base) { this.getRate(this.state.base, event.target.value), this.getHistoricalRates(this.state.base, event.target.value) }
+    if (event.target.value === 'All') {this.getRatesData(this.state.base)}
     let fullName = this.state.currencyFilter.filter((match) => {
       return event.target.value === match.acronym
     })
